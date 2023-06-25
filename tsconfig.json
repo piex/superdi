@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "strict": true,
+    "allowJs": false,
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "types": [
+      "tslib",
+      "jest"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
