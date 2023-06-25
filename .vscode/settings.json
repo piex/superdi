@@ -1,3 +1,6 @@
 {
-  "jestrunner.jestCommand": "npm run test --"
+  "jestrunner.jestCommand": "npm run test --",
+  "cSpell.words": [
+    "Podi"
+  ]
 }

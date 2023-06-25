@@ -4,19 +4,20 @@
 
 ## Features
 
-[x] 100% type safe
-[x] lifetime support singleton and transient
-[x] support unregister
-[x] support multiton register and resolveAll mode
-[x] support async dispose
-[x] support injector
-[x] support register value, function and class
-[ ] clear the history register when unregister
+[x] 100% type safe.
+[x] No third-party dependencies.
+[x] Lifetime support singleton and transient.
+[x] Support unregister.
+[x] Support multiton register and resolveAll mode.
+[x] Support async dispose.
+[x] Support injector.
+[x] Support register value, function and class.
+[ ] Clear the history register when unregister.
 
 ## Installation
 
 ```shell
-npm install powerdi
+npm install podi
 ```
 
 ## Usage

@@ -17,7 +17,7 @@ export class Token<T> {
       this.#name = Symbol(name);
     } else {
       if (tokenMap.has(name)) {
-        throw new Error(`PowerDI: Token name "${name}" is already been used.`);
+        throw new Error(`Podi: Token name "${name}" is already been used.`);
       }
       this.#name = Symbol.for(name);
       tokenMap.set(name, true);
