@@ -23,39 +23,39 @@ export class Container {
     return this;
   }
 
-  public register<P = unknown, R = unknown>(token: Token<R>, v: Resolver<P, R>) {
+  public register<P = unknown, R = unknown>(token: Token<R>, resolver: Resolver<P, R>) {
     // options.root is always cached in the root container.
 
-    if (v.root) {
+    if (resolver.root) {
       if (this.parentContainer) {
-        this.parentContainer.register(token, v);
+        this.parentContainer.register(token, resolver);
         return;
       }
     }
 
     if (this.registrationMap.has(token.name)) {
       const registration = this.registrationMap.get(token.name)!;
-      registration.set(v);
+      registration.set(resolver);
     } else {
       const registration = new Registration(this);
-      registration.set(v);
+      registration.set(resolver);
       this.registrationMap.set(token.name, registration);
     }
   }
 
-  public async unregister<P = unknown, R = unknown>(token: Token<R>, v?: Resolver<P, R>) {
+  public async unregister<P = unknown, R = unknown>(token: Token<R>, resolver?: Resolver<P, R>) {
     if (!this.registrationMap.has(token.name)) {
       return true;
     }
 
     const registration = this.registrationMap.get(token.name)!;
 
-    if( v === undefined ) {
+    if( resolver === undefined ) {
       this.registrationMap.delete(token.name);
       return registration.clear();
     }
     
-    const res = await registration.delete(v);
+    const res = await registration.delete(resolver);
 
     if(registration.isEmpty) {
       this.registrationMap.delete(token.name);
@@ -94,7 +94,7 @@ export class Container {
     return this.getResolvers(token).map(r => r.resolve(this) as T);
   }
 
-  public getResolvers<T>(token: Token<T>) {
+  private getResolvers<T>(token: Token<T>) {
     const hasToken = this.registrationMap.has(token.name);
 
     let resolvers: RegistrationResolver<any, any>[] =[];
@@ -109,14 +109,14 @@ export class Container {
     return sortResolvers(resolvers);
   }
 
-  public async dispose() {
+  public async dispose(): Promise<any[]> {
     const registrations: Registration[] = [];
     this.registrationMap.forEach(registration => {
       registrations.push(registration);
     });
 
     this.registrationMap.clear();
-    return await Promise.all(registrations.map(r => r.clear()));
+    return await Promise.all(registrations.map(r => r.clear()).flat(1));
   }
 
   public createScope() {
@@ -125,18 +125,40 @@ export class Container {
     return scope;
   }
 
-  public hasRegistration<T>(token: Token<T>) {
-    return this.registrationMap.has(token.name);
-  }
+  public hasRegistration<T>(token: Token<T>, options: ContainerResolveOptions = {}): boolean {
+    const scopedHasRegistration = this.registrationMap.has(token.name);
 
-  public hasResolved<T>(token: Token<T>) {
-    if (!this.registrationMap.has(token.name)) {
-      return false;
+    if (options.scoped || !this.parentContainer) {
+      return scopedHasRegistration;
     }
 
-    const registration = this.registrationMap.get(token.name)!;
-    return registration.hasResolved();
+    if (scopedHasRegistration) {
+      return true;
+    }
+
+    return this.parentContainer.hasRegistration(token, { scoped:false });
+  }
+
+  public hasResolved<T>(token: Token<T>, options: ContainerResolveOptions = {}): boolean {
+    const scopedHasToken = this.registrationMap.has(token.name);
+    const registration = this.registrationMap.get(token.name);
+
+    if (options.scoped || !this.parentContainer) {
+      if (!scopedHasToken) {
+        return false;
+      }
+
+      return registration!.hasResolved();
+    }
+
+    if(registration?.hasResolved()) {
+      return true;
+    }
+
+    return this.parentContainer.hasResolved(token, { scoped: false});
   }
 }
 
-export const createContainer = () => new Container();
+export const createContainer = (parentContainer?: Container) => new Container(parentContainer);
+
+export const globalContainer = new Container();

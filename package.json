@@ -1,7 +1,7 @@
 {
-  "name": "podi",
-  "version": "0.0.1-alpha.2",
-  "description": "Podi is a 100% type safe di library.",
+  "name": "superdi",
+  "version": "0.0.1-alpha.1",
+  "description": "Super DI is a 100% type safe di library.",
   "scripts": {
     "prebuild": "rm -rf ./dist",
     "pretest": "tsc --noEmit",
@@ -46,8 +46,8 @@
     }
   },
   "files": [
-    "./dist/**/*",
-    "./package.json"
+    "dist",
+    "README-cn.md"
   ],
   "engines": {
     "node": ">=14.21.3"
@@ -57,12 +57,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/piex/podi.git"
+    "url": "git+https://github.com/piex/superdi.git"
   },
   "bugs": {
-    "url": "https://github.com/piex/podi/issues"
+    "url": "https://github.com/piex/superdi/issues"
   },
-  "homepage": "https://github.com/piex/podi",
+  "homepage": "https://github.com/piex/superdi",
   "devDependencies": {
     "@babel/plugin-transform-typescript": "^7.22.5",
     "@babel/preset-env": "^7.22.5",

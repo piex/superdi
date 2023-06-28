@@ -27,7 +27,7 @@ describe("token", () => {
     const token1 = createToken(tokenName);
 
     expect(token1.name).toBe(Symbol.for(tokenName));
-    expect(() => createToken(tokenName)).toThrow(`Podi: Token name "${tokenName}" is already been used.`);
+    expect(() => createToken(tokenName)).toThrow(`Super DI: Token name "${tokenName}" is already been used.`);
   });
 
   it('createToken multiton', () => {

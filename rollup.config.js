@@ -77,7 +77,7 @@ function createCommonJSConfig(input, output) {
 }
 
 function createUMDConfig(input, output, env) {
-  let name = 'podi';
+  let name = 'superdi';
   const fileName = output.slice('dist/umd/'.length);
   const capitalize = (s) => s.slice(0, 1).toUpperCase() + s.slice(1);
   if (fileName !== 'index') {

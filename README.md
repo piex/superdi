@@ -1,6 +1,10 @@
-# Podi
+# Super DI
 
-100% type safe Dependency Injection tool for Typescript.
+<p align='center'>100% type safe Dependency Injection tool for Typescript</p>
+
+<p align='center'>
+  English | <a href='./README.zh-CN.md'>简体中文</a>
+</p>
 
 ## Features
 
@@ -17,7 +21,7 @@
 ## Installation
 
 ```shell
-npm install podi
+npm install superdi
 ```
 
 ## Usage
