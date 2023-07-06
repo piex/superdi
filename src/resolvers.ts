@@ -12,14 +12,12 @@ import {
 import { Container } from "./container";
 
 export abstract class Resolver<P = unknown, R = unknown> {
-  protected readonly lifetime: LIFETIME;
   protected injector: InjectorFunction<P> | undefined;
   public readonly weight: number;
   public readonly disposer: ResolverDisposer<R> | undefined;
   public readonly root: boolean;
 
   constructor(options: ResolverOptions<R> = {}) {
-    this.lifetime = options.lifetime || LIFETIME.SINGLETON;
     this.weight = options.weight || 0;
     this.disposer = options.disposer;
     this.root = options.root ?? false;
@@ -61,13 +59,16 @@ class FunctionResolver<
   R extends ReturnType<F>,
 > extends Resolver<P, R> {
   readonly #fn: F;
+  readonly #lifetime: LIFETIME;
   #instance: R | undefined;
   #hasResolved = false;
+
 
   constructor(...params: AsFunctionParams<F>) {
     const [fn, options] = params;
     super(options);
     this.#fn = fn;
+    this.#lifetime = options?.lifetime || LIFETIME.SINGLETON;
     this.injector = (options as any)?.injector;
   }
 
@@ -84,7 +85,7 @@ class FunctionResolver<
 
     const fn = this.#fn;
 
-    if(this.lifetime === LIFETIME.TRANSIENT) {
+    if(this.#lifetime === LIFETIME.TRANSIENT) {
       return fn(...(this.injector?.(container) ?? [] as any));
     }
 
@@ -101,6 +102,7 @@ class ClassResolver<
   P extends ConstructorParameters<C> = any,
   R extends InstanceType<C> = any,
 > extends Resolver<P, R> {
+  readonly #lifetime: LIFETIME;
   readonly #Cls: Constructor<P, R>;
   #instance: R | undefined;
   #hasResolved = false;
@@ -109,6 +111,7 @@ class ClassResolver<
     const [Cls, options] = params;
     super(options);
     this.#Cls = Cls;
+    this.#lifetime = options?.lifetime || LIFETIME.SINGLETON;
     this.injector = (options as any)?.injector;
   }
 
@@ -125,7 +128,7 @@ class ClassResolver<
 
     const Cls = this.#Cls;
 
-    if(this.lifetime === LIFETIME.TRANSIENT) {
+    if(this.#lifetime === LIFETIME.TRANSIENT) {
       return new Cls(...(this.injector?.(container) ?? [] as any));
     }
 

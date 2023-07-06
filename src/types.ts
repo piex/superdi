@@ -5,8 +5,7 @@ import { Resolver } from "./resolvers";
 /** 依赖注入作用域 */
 export const enum LIFETIME {
   /**
-   * 在Singleton作用域中，容器只会创建一个实例，并将该实例注入到所有请求该依赖项的类中。
-   * Singleton作用域是默认的作用域，通常用于在整个应用程序中共享依赖项
+   * 在Singleton模式中，容器只会创建一个实例，并将该实例注入到所有请求该依赖项的类中
    */
   SINGLETON = 'SINGLETON',
   /**
@@ -59,8 +58,6 @@ export type ResolverDisposer<I> = (value: I, container: Container) => any | Prom
  * A resolver options for asClass() or asFunction() or asValue().
  */
 export interface ResolverOptions<I> {
-  /** 设置注入的生效方式 */
-  lifetime?: LIFETIME;
   /** 设置是否注入到根作用域，默认为 false */
   root?: boolean;
   /** 设置注入的权重值，默认为0 */
@@ -78,7 +75,12 @@ export interface ResolverOptions<I> {
  */
 export type InjectorFunction<P> = (container: Container) => P;
 
-export interface ResolverOptionsWithInjector<I, P> extends ResolverOptions<I> {
+export interface ResolverOptionsWithLifetime<I> extends ResolverOptions<I> {
+  /** 设置注入的生效方式 */
+  lifetime?: LIFETIME;
+}
+
+export interface ResolverOptionsWithLifetimeAndInjector<I, P> extends ResolverOptionsWithLifetime<I> {
   injector: InjectorFunction<P>;
 }
 
@@ -94,17 +96,17 @@ export type AsFunctionParams<
   F extends (...arg: any[]) => unknown,
   P extends Parameters<F> = any,
   R extends ReturnType<F> = any
-> = P extends [] ? [F, ResolverOptions<R>?] :
-    P extends any[] ? [F, ResolverOptionsWithInjector<R, P>] : 
-    [F, (Partial<ResolverOptionsWithInjector<R, P>>)?];
+> = P extends [] ? [F, ResolverOptionsWithLifetime<R>?] :
+    P extends any[] ? [F, ResolverOptionsWithLifetimeAndInjector<R, P>] : 
+    [F, (Partial<ResolverOptionsWithLifetimeAndInjector<R, P>>)?];
 
 export type AsClassParams<
   C extends Constructor<any, any>,
   P extends ConstructorParameters<C> = any,
   I extends InstanceType<C> = any,
-> = P extends [] ? [C, ResolverOptions<I>?] :
-    P extends any[] ? [C, ResolverOptionsWithInjector<I, P>] : 
-    [C, (Partial<ResolverOptionsWithInjector<I, P>>)?];
+> = P extends [] ? [C, ResolverOptionsWithLifetime<I>?] :
+    P extends any[] ? [C, ResolverOptionsWithLifetimeAndInjector<I, P>] : 
+    [C, (Partial<ResolverOptionsWithLifetimeAndInjector<I, P>>)?];
 
 export type RegistrationMap = Map<symbol, Registration<any>>;
 

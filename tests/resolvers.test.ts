@@ -102,7 +102,7 @@ describe("Resolver asFunction", () => {
     const fn = (a: number, b: number) => a + b;
 
     const r = asFunction(fn, {
-      injector: () => [3, 5],
+      injector: () => [3, 5] as [number, number],
     });
 
     expect(r.hasResolved).toBeFalsy();

@@ -24,8 +24,7 @@ export class Container {
   }
 
   public register<P = unknown, R = unknown>(token: Token<R>, resolver: Resolver<P, R>) {
-    // options.root is always cached in the root container.
-
+    // options.root is always register in the root container.
     if (resolver.root) {
       if (this.parentContainer) {
         this.parentContainer.register(token, resolver);
@@ -43,25 +42,36 @@ export class Container {
     }
   }
 
-  public async unregister<P = unknown, R = unknown>(token: Token<R>, resolver?: Resolver<P, R>) {
-    if (!this.registrationMap.has(token.name)) {
-      return true;
+  public async unregister<P = unknown, R = unknown>(token: Token<R>, resolver?: Resolver<P, R>): Promise<any> {
+    // 注入根容器的从根容器删除
+    if (resolver?.root && this.parentContainer) {
+      return this.parentContainer.unregister(token, resolver);
     }
 
-    const registration = this.registrationMap.get(token.name)!;
+    const disposePromise: Promise<any>[] = [];
 
-    if( resolver === undefined ) {
-      this.registrationMap.delete(token.name);
-      return registration.clear();
+    // 清理当前容器
+    if (this.registrationMap.has(token.name)) {
+      const registration = this.registrationMap.get(token.name)!;
+
+      if (resolver) {
+        disposePromise.push(registration.delete(resolver));
+      } else {
+        this.registrationMap.delete(token.name);
+        disposePromise.push(registration.clear());
+      }
     }
-    
-    const res = await registration.delete(resolver);
 
-    if(registration.isEmpty) {
-      this.registrationMap.delete(token.name);
+    // 清理父级容器
+    if (this.parentContainer) {
+      disposePromise.push(this.parentContainer.unregister(token, resolver));
     }
 
-    return res;
+    return Promise.all(disposePromise).then(arr => {
+      const firstPart = arr.slice(0, arr.length - 1);
+      const lastElement = arr.slice(arr.length - 1)[0];
+      return [...firstPart, lastElement];
+    });
   }
 
   public resolve<T>(token: Token<T>, options: ContainerResolveOptions = {}): T | null {

@@ -1,5 +1,5 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
-module.exports = {
+export default {
   rootDir: '.',
   preset: 'ts-jest',
   testEnvironment: 'node',
@@ -10,7 +10,4 @@ module.exports = {
   restoreMocks: true,
   testRegex: '/tests/.+\\.test\\.ts?$',
   verbose: false,
-  // moduleNameMapper: {
-  //   '../src(.*)': '<rootDir>/src$1'
-  // }
 };

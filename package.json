@@ -52,6 +52,10 @@
   "engines": {
     "node": ">=14.21.3"
   },
+  "volta": {
+    "node": "18.16.1",
+    "pnpm": "8.6.6"
+  },
   "keywords": [],
   "author": "",
   "license": "MIT",
