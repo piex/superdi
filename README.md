@@ -8,7 +8,7 @@
 
 <h2 align='center' style="margin: 50px 0 20px;">Why create a new DI tool?</h2>
 
-There are ready have many DI tools：
+There are have many DI tools：
 
 1. [microsoft/tsyringe](https://github.com/microsoft/tsyringe)
 2. [typestack/typedi](https://github.com/typestack/typedi)
