@@ -1,20 +1,17 @@
 {
   "name": "superdi",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "description": "Super DI is a 100% type safe di library.",
   "scripts": {
     "prebuild": "rm -rf ./dist",
     "pretest": "tsc --noEmit",
     "test": "jest -c ./jest.config.js",
-    "build:base": "rollup -c",
-    "build:utils": "rollup -c --config-utils",
-    "build:vanilla": "rollup -c --config-vanilla",
-    "build:vanilla_utils": "rollup -c --config-vanilla_utils",
+    "build": "rollup -c",
     "publish:alpha": "npm --registry=https://registry.npmjs.org publish --tag alpha --access public"
   },
   "type": "module",
-  "main": "./index.js",
-  "types": "./index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "<4.5": {
       "esm/*": [
@@ -28,21 +25,21 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./index.d.ts",
+      "types": "./dist/index.d.ts",
       "import": {
-        "default": "./esm/index.mjs"
+        "default": "./dist/esm/index.mjs"
       },
-      "module": "./esm/index.js",
-      "default": "./index.js"
+      "module": "./dist/esm/index.js",
+      "default": "./dist/index.js"
     },
     "./*": {
       "types": "./*.d.ts",
       "import": {
-        "types": "./esm/*.d.mts",
-        "default": "./esm/*.mjs"
+        "types": "./dist/esm/*.d.mts",
+        "default": "./dist/esm/*.mjs"
       },
-      "module": "./esm/*.js",
-      "default": "./*.js"
+      "module": "./dist/esm/*.js",
+      "default": "./dist/*.js"
     }
   },
   "files": [

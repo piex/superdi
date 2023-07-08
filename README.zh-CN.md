@@ -6,7 +6,7 @@
   <a href='./README.md'>English</a> | 简体中文
 </p>
 
-## 为什么要实现一个 DI 新的工具？
+<h2 align='center' style="margin: 50px 0 20px;">为什么要实现一个新的 DI 工具？</h2>
 
 现在已经有很多的依赖注入工具了：
 
@@ -15,29 +15,29 @@
 3. [inversify/InversifyJS](https://github.com/inversify/InversifyJS)
 4. [jeffijoe/awilix](https://github.com/jeffijoe/awilix)
 
-这些工具都非常强大，久经社区考验，但是这些工具大部分都是基于ES6 `class` 和装饰器来实现的，是类似框架性质的依赖注入解决方案，使用起来很复杂，在轻量级的场景不适用，而且在非 `class` 场景，基本没有类型推断。
+这些工具都非常强大，久经社区考验，不过有一个问题：这些工具基本都是基于ES6 `Class` 和 `Decorator` 来实现的，是类似框架性质的依赖注入解决方案，使用起来很复杂，在轻量级的场景不适用，而且在非 `Class` 场景，基本没有类型推断。
 
-比如，要实现一个 SDK，有一些功能希望通过插件或者接入方自己实现，这时候依赖注入就是一个不错的方案，但是此时还没有具体的实现，只有接口，所以装饰器注入方案是无法使用的，在这种场景下需要在 SDK 侧先定义一个标识，然后让接入方使用该标识注入所需要的依赖。
+开发这个库的主要原因就是一个典型的场景，我要实现一个 SDK，有一些功能希望通过插件或者接入方自己实现，这时候依赖注入就是一个不错的方案，但是此时还没有具体的实现，所以装饰器注入方案是无法使用的。在这种场景下需要在 SDK 侧先定义一个标识，然后让接入方使用该标识注入所需要的依赖。
 
-而且业务方所需要的依赖可能是任何类型的，`number`、`string`、`function`、`class` 等，而除了 `class`，其他类型都不支持装饰器，如果需要在注入时能根据标识推断出所注入的依赖类型对不对，这个能力也是上面这些库所不具备的。
+而且业务方所需要的依赖可能是任何类型的，`number`、`string`、`function`、`class` 等，而除了 `class`，其他类型都不支持装饰器，如果需要在注入时能根据标识推断出所注入的依赖类型正确与否，这个能力也是上面这些库所不具备的。
 
 基于以上原因，我实现了 SuperDI，SuperDI 是一个 100% 类型安全的轻量依赖注入工具，通过 `Token` 机制，可以提前定义所需依赖的类型，然后依赖注入的时候可以推断出注入的依赖类型的正确与否，此外还有很多其他功能。
 
-## Super DI 的优势
+<h2 align='center' style="margin: 50px 0 20px;">Super DI 的优势</h2>
 
-- [x] 100% 类型安全，可以提前定义依赖类型，然后在依赖注入时进行类型推断和检查；
+- [x] 100% 类型安全，可以提前定义依赖类型，在依赖注入时进行类型推断和检查；
 - [x] 非常轻量，不依赖任何第三方库；
 - [x] 支持 `singleton` 和 `transient` 两种生命周期；
-- [x] 将 `scoped` 从生命周期中剥离出来，作为单独的维度和生命周期混合使用；
-- [x] 支持注入多个依赖项，然后通过 `resolveAll` 获取所有注入的依赖项并按照权重和注入顺序排序；
+- [x] 将 `scoped` 从生命周期中剥离出来，作为单独的维度和生命周期交叉使用；
+- [x] 支持注入多个依赖项，然后通过 `resolveAll` 获取所有注入的依赖项，并按照权重和注入顺序排序；
 - [x] 支持取消注入时执行异步的 `dispose` 方法清理一些副作用，并将结果返回；
+- [x] 支持 `value`、`function`、`class` 三种不同的注入形式，应用场景更广泛；
 - [x] 注入时支持 `injector` 方法，可以在运行时传入函数与类的初始化参数；
-- [x] 支持 `value`、`function`、`class` 三种不同的注入方式；
 - [ ] 支持取消注入，取消注入后会触发清理依赖回调，使用方可以注册监听回调，然后释放注入的依赖资源；
 - [ ] 支持在注入新依赖时清理所有的历史依赖，并触发清理依赖回调；
 - [ ] `dispose` 和 `unregister` 支持 `withoutDisposeCallback` 参数。
 
-## 使用指南
+<h2 align='center' style="margin: 50px 0 20px;">使用指南</h2>
 
 ### 安装
 
@@ -58,7 +58,7 @@ const token1 = createToken<number>('token1');
 const token2 = new Token<number>('token2');
 ```
 
-以上两种创建 `Token` 的方式是等价的，这里的泛型 `number` 是指该 `Token` 对应的依赖的类型，需要显式的进行声明。
+以上两种创建 `Token` 的方式是等价的，这里定义的泛型 `number` 是指该 `Token` 对应的依赖的类型，需要显式的进行声明。
 
 这两种创建 `Token` 方式的参数也完全一样，第一个参数是 `Token` 的标识字符串（仅支持字符串），第二个参数类型如下：
 
@@ -80,7 +80,7 @@ interface TokenOptions {
 
 #### Resolver
 
-`Resolver` 是负责处理注入的依赖的部分，SuperDI 提供了三个方法来生成 `Resolver`：
+`Resolver` 是负责处理注入的依赖的部分，SuperDI 提供了三种方式来生成 `Resolver`：
 
 ##### `asValue`
 
@@ -94,7 +94,7 @@ type ResolverDisposer<I> = (value: I, container: Container) => any | Promise<any
 interface ResolverOptions<I> {
   /** 设置是否注入到根作用域，默认为 false */
   root?: boolean;
-  /** 设置注入的权重值，默认为 0 */
+  /** 设置注入的权重值，默认为 0，resolverAll 时会根据该权重值排序 */
   weight?: number;
   /** 设置清理器，在取消注入和销毁容器时会调用 */
   disposer?: ResolverDisposer<I>;
@@ -108,8 +108,8 @@ interface ResolverOptions<I> {
 `asFunction` 支持 `asValue` 的所有配置参数，还额外支持以下两个参数：
 
 1. `lifetime`: 设置注入的依赖的生效方式，其有以下两个取值：
-   1. `LIFETIME.SINGLETON`: 默认值，在该模式中，容器只会执行一次传入的函数，并将该函数的返回值注入到所有请求该依赖项的类中，这意味着所有的请求都会使用同一个函数返回值。
-   2. `LIFETIME.TRANSIENT`: 在该作用域中，每次请求依赖项时，容器都会执行函数并得到一个新的函数返回值并进行注入，这意味着每个请求都将得到一个新的函数返回值，其通常用于不需要共享实例的依赖项，或者那些有状态的依赖项。
+   1. `LIFETIME.SINGLETON`: 默认值，在该模式中，容器只会执行一次传入的函数，并将该函数的返回值缓存起来，如果请求该依赖项，则直接返回缓存的值。这意味着所有的请求都会使用同一个函数返回值。
+   2. `LIFETIME.TRANSIENT`: 在该模式种，每次请求依赖项时，容器都会执行函数并得到一个新的函数返回值并进行注入。这意味着每个请求都将得到一个新的函数返回值，其通常用于不需要共享实例的依赖项，或者那些有状态的依赖项。
 2. `injector`: SuperDI 执行函数前，会先执行 `injector`，然后将其返回值传递给注入的函数。
 
 `injector` 的类型如下，SuperDI 会将当前容器传递给 `injector` 作为参数。
@@ -123,23 +123,32 @@ type InjectorFunction<P> = (container: Container) => P;
 举一个简单的例子:
 
 ```ts
+// 创建一个容器
 const container = createContainer();
+
+// 创建三个Token
 const token = createToken<number>('token');
 const num1 = createToken<number>('num1');
 const num2 = createToken<number>('num2');
 
+// 声明一个两数相加的 add 函数
 const add = (a: number, b: number) => a + b;
 
+// 使用 token 将 add 函数注入到容器中
+// 并从容器中获取 num1 和 num2 作为 add 函数的参数
+// 因为 add 函数有两个参数，所以需要返回数组
 container.register(token, asFunction(add, {
   injector: (con) => [con.resolve(num1)!, con.resolve(num2)!],
 }));
+// 注入 num1，其依赖是一个数字，会根据 num1 的类型自动推导
 container.register(num1, asValue(0.1));
+// 注入 num2，也是一个数字
 container.register(num2, asValue(0.2));
-
+// 最终可以通过 token 获取一个数字，其实执行 add 后的返回值
 container.resolve(token) // 0.30000000000000004;
 ```
 
-上述 Demo 的 `token` 拿到的是 `0.30000000000000004`，这里将 `0.1` 和 `0.2` 注入到 `container` 中，然后再将其从 `injector` 中返回，并传递给 `add` 函数作为其两个参数，所以会得到 `num1` 和 `num2` 注入的两数之和。
+上述 Demo 通过 `token` 最终可以获取一个数字 `0.30000000000000004`，这里将 `0.1` 和 `0.2` 注入到 `container` 中，然后再将其从 `injector` 中返回，并传递给 `add` 函数作为其两个参数，所以会得到 `num1` 和 `num2` 注入的两数之和。
 
 这个例子也能体现依赖注入的优势，比如简单的 `add` 函数有精度计算问题，则可以通过 `token` 注入新的方法来替换掉该方法，如使用 `big.js`:
 
@@ -179,17 +188,17 @@ const container = createContainer();
 可以通过 `Container` 的 `register` 方法向容器里注入一个依赖，注入依赖需要 `Token` 和依赖的 `Resolver`：
 
 ```ts
-const token = createToken<number>('someNumberValue');
+const token = createToken<number>('someNumberToken');
 const value = 9.9;
 container.register(token, asValue(value));
 container.register(token, asFunction(() => value));
 ```
 
-上面定义了一个 `token`，通过 TS 泛型约束了该 `token` 对应的依赖是 `number` 类型，如果不是 `number` 类型，`register` 时会有 ts 类型报错。
+上面定义了一个 `token`，通过 TS 泛型约束了该 `token` 对应的依赖是 `number` 类型，如果不是 `number` 类型，`register` 时会有 TS 类型报错。
 
 ##### `hasRegistration`
 
-还可以通过 `Container` 的 `hasRegistration` 方法判断某个 `token` 是否已经被注入过依赖。
+可以通过 `Container` 的 `hasRegistration` 方法判断某个 `token` 是否已经被注入过依赖。
 
 `hasRegistration` 的类型定义如下：
 
@@ -201,17 +210,17 @@ interface ContainerResolveOptions {
 Container.hasRegistration<T>(token: Token<T>, options?: ContainerResolveOptions): boolean;
 ```
 
-使用时传入token就可以了，`true` 为已经有依赖注入，`false` 为还没有依赖注入。
+使用时传入 token 就可以了，`true` 为已经有依赖注入，`false` 为还没有依赖注入。
 
 ```ts
 container.hasRegistration(token);
 ```
 
-如果传入了 `options.scoped` 为 `true`，则只在当前作用域查找，不会向上查找其父级作用域。
+如果传入了 `options.scoped` 为 `true`，则只在当前作用域查找，不会向上递归查找其父级作用域。
 
 ##### `resolve`
 
-可以通过 `resolve` 方法获取对应 token 注入的资源，如果该 token 还未注入依赖，则返回 `null`。
+可以通过 `resolve` 方法获取对应 token 注入的依赖，如果该 token 还未注入依赖，则返回 `null`。
 
 ```ts
 interface ContainerResolveOptions {
@@ -221,7 +230,7 @@ interface ContainerResolveOptions {
 Container.resolve<T>(token: Token<T>, options?: ContainerResolveOptions): T | null;
 ```
 
-如果传入了 `options.scoped` 为 `true`，则只在当前作用域查找，不会向上查找其父级作用域。
+如果传入了 `options.scoped` 为 `true`，则只在当前作用域查找，不会向上递归查找其父级作用域。
 
 ##### `resolveAll`
 
@@ -243,7 +252,7 @@ Container.resolveAll<T>(token: Token<T>, options?: ContainerResolveOptions): T[]
 Container.hasResolved<T>(token: Token<T>, options?: ContainerResolveOptions): boolean;
 ```
 
-如果传入了 options.scoped 为 true，则只在当前作用域查找，不会向上查找其父级作用域。
+如果传入了 `options.scoped` 为 `true`，则只在当前作用域查找，不会向上递归查找其父级作用域。
 
 ##### `unregister`
 
